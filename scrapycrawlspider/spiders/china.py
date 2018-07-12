@@ -140,7 +140,7 @@ class ChinaSpider(CrawlSpider):
         Rule(LinkExtractor(allow='article\/.*\.html',
                            restrict_xpaths='//div[@id="left_side"]//div[@class="con_item"]'),
              render=True, callback='parse_item'),
-        Rule(LinkExtractor(restrict_xpaths='//div[@id="pageStyle"]//a[contains(., "下一页")]'))
+        # Rule(LinkExtractor(restrict_xpaths='//div[@id="pageStyle"]//a[contains(., "下一页")]'))
     )
     
     def parse_item(self, response):
