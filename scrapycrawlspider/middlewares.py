@@ -20,7 +20,9 @@ class PyppeteerMiddleware():
         self.logger = getLogger(__name__)
         self.loop = asyncio.get_event_loop()
         self.browser = self.loop.run_until_complete(
-            pyppeteer.launch(headless=True))
+            pyppeteer.launch(headless=True,
+                             handleSIGTERM=False,
+                             handleSIGINT=False, ))
         self.args = args
     
     def __del__(self):
