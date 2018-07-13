@@ -22,7 +22,7 @@ class PyppeteerMiddleware():
         self.browser = self.loop.run_until_complete(
             pyppeteer.launch(headless=True,
                              handleSIGTERM=False,
-                             handleSIGINT=False, ))
+                             handleSIGINT=False))
         self.args = args
     
     def __del__(self):
