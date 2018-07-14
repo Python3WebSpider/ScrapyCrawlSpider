@@ -18,12 +18,8 @@ class PyppeteerMiddleware():
         :param args:
         """
         self.logger = getLogger(__name__)
-        self.loop = asyncio.get_event_loop()
-        self.browser = self.loop.run_until_complete(
-            pyppeteer.launch(headless=True,
-                             handleSIGTERM=False,
-                             handleSIGINT=False))
         self.args = args
+        self.loop = asyncio.get_event_loop()
     
     def __del__(self):
         """
@@ -48,12 +44,15 @@ class PyppeteerMiddleware():
         :param with_result: return with js evaluation result
         :return: content, [result]
         """
+        browser = self.loop.run_until_complete(pyppeteer.launch(headless=True,
+                                                                handleSIGTERM=False,
+                                                                handleSIGINT=False))
         
         # define async render
         async def async_render(url, script, scrolldown, sleep, wait, timeout, keep_page):
             try:
                 # basic render
-                page = await self.browser.newPage()
+                page = await browser.newPage()
                 await asyncio.sleep(wait)
                 response = await page.goto(url, options={'timeout': int(timeout * 1000)})
                 if response.status != 200:
@@ -94,7 +93,7 @@ class PyppeteerMiddleware():
                                  scrolldown=scrolldown, timeout=timeout, keep_page=keep_page))
             else:
                 break
-        
+        self.loop.run_until_complete(browser.close())
         # if need to return js evaluation result
         return content, result, status
     
@@ -107,7 +106,7 @@ class PyppeteerMiddleware():
         if request.meta.get('render'):
             try:
                 self.logger.debug('rendering %s', request.url)
-                html, result, status = self.render(request.url)
+                html, result, status = self.render(request.url, **self.args)
                 return HtmlResponse(url=request.url, body=html, request=request, encoding='utf-8',
                                     status=status)
             except websockets.exceptions.ConnectionClosed:

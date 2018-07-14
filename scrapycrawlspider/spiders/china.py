@@ -125,7 +125,7 @@ class CrawlSpider(BaseSpider):
                      if lnk not in seen]
             if links and rule.process_links:
                 links = rule.process_links(links)
-            for link in links:
+            for link in links[0:2]:
                 seen.add(link)
                 r = self._generate_request(index, rule, link)
                 yield rule.process_request(r)
